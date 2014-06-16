@@ -40,8 +40,16 @@ Proof.
    intro.
    unfold urejen.
    induction lst.
-   - admit.
-   - admit.
+   - reflexivity. (* Trivialen primer *)
+   - simpl.
+     unfold insert.
+     induction a. (* Ostale primere locimo glede na vejitev v insert *)
+     + simpl. (* Primer == *)
+       admit.
+     + simpl. (* Primer > *)
+       admit.
+     + simpl. (* Primer < *)
+       admit.
 Qed.
 
 (* ... ki je obenem permutacija vhodnega seznama *)
