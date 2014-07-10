@@ -38,23 +38,23 @@ Eval compute in (insertion_sort (2::6::1::3::9::7::0::nil)%Z).
 Theorem insertion_sort_deluje_1: forall lst: list Z, urejen (insertion_sort lst).
 Proof.
    intro.
-   unfold urejen.
+   (*unfold urejen.*)
    induction lst.
    - reflexivity. (* Trivialen primer *)
    - simpl.
-     unfold insert.
-     induction a. (* Ostale primere locimo glede na vejitev v insert *)
-     + simpl. (* Primer == *)
-       admit.
-     + simpl. (* Primer > *)
-       admit.
-     + simpl. (* Primer < *)
-       admit.
+     (*unfold insert.*)
+
+admit.
 Qed.
 
 (* ... ki je obenem permutacija vhodnega seznama *)
 Theorem insertion_sort_deluje_2: forall lst: list Z, permutiran lst (insertion_sort lst).
 Proof.
-   admit.
+   induction lst.
+   - unfold insertion_sort.
+     admit.
+   - destruct lst.
+     + admit.
+     + 
 Qed.
   
