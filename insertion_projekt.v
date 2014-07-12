@@ -2,8 +2,8 @@ Require Import List.
 Require Import Bool.
 Require Import ZArith.
 Require Import BauerSorting.
-Local Open Scope Z_scope.
-Print urejen.
+Open Scope Z_scope.
+
 
 (** 
    Pomozna funckija za vstavljanje celega stevila x v seznam celih stevil l.
@@ -30,20 +30,59 @@ Fixpoint insertion_sort (l: list Z): list Z :=
       | (cons x l') => insert x (insertion_sort l') (* Potuj po seznamu, premikaj trenutno glavo na ustrezno mesto *)
    end.
 
+Hint Resolve urejen_head urejen_tail : urejenost.
 
-(* Primer sortiranja *)
-Eval compute in (insertion_sort (12::56::-1::-43::42::-42::0::0::9::7::0::nil)%Z).
+Lemma manjse_enako (a: Z) (b: Z): a < b -> a <= b.
+Proof.
+  intro.
+  case (Z_le_gt_dec a b).
+  - intro.
+    assumption.
+  - intro.
+    firstorder.
+Qed.
 
+
+Hint Resolve urejen_tail urejen_head urejen_lt_cons : urejen_hint.
 Lemma ohranjanje_urejenosti_vstavljanja (x: Z) (l: list Z): urejen l -> urejen(insert x l).
 Proof.
    intro.
    induction l.
-   - auto.
-   - simpl.
-     case_eq (x <=? a).
-     + intro.
-       admit.
-     + admit.
+   - auto. (* Vstavljanje v prazen seznam *)
+   - simpl. (* Netrivialen primer *)
+     case (Z_le_gt_dec x a). (* Primerjamo element, ki ga vstavljamo, s trenutno glavo *)
+     * simpl. 
+       auto.
+     * intro.
+       simpl.
+       destruct l.
+       + simpl.
+         split.
+         Focus.
+           apply manjse_enako.
+           firstorder.
+           assumption. (* Vedno predpostavimo resnico *)
+       + simpl.
+         case (Z_le_gt_dec x z).
+         Focus.
+           split.
+           Focus.
+           firstorder.
+           simpl.
+           split.
+           Focus.
+             assumption.
+             firstorder.
+             intro.
+             split.
+             Focus.
+                firstorder.
+                simpl.
+                firstorder.
+                apply urejen_tail in H0.
+                elim H.
+                elim g0.
+                admit.
 Qed.
 
 (* Rezulat insterition sorta je urejen seznam... *)
@@ -53,9 +92,8 @@ Proof.
    (*unfold urejen.*)
    induction lst.
    - reflexivity. (* Trivialen primer *)
-   - apply ohranjanje_urejenosti_vstavljanja.
+   - apply ohranjanje_urejenosti_vstavljanja. (* Tu uporabi pomozno lemo *)
      auto.
-     (* Tu uporabi pomozno lemo *)
      (*unfold insert.*)
 Qed.
 
