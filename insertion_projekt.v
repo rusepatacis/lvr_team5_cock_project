@@ -2,8 +2,8 @@ Require Import List.
 Require Import Bool.
 Require Import ZArith.
 Require Import BauerSorting.
-Open Scope Z_scope.
 
+Open Scope Z_scope.
 
 (** 
    Pomozna funckija za vstavljanje celega stevila x v seznam celih stevil l.
@@ -30,8 +30,7 @@ Fixpoint insertion_sort (l: list Z): list Z :=
       | (cons x l') => insert x (insertion_sort l') (* Potuj po seznamu, premikaj trenutno glavo na ustrezno mesto *)
    end.
 
-Hint Resolve urejen_head urejen_tail : urejenost.
-
+(* Pomozna lema, uporabljena v dokazu ohranjanje_urejenosti_vstaljanja *)
 Lemma manjse_enako (a: Z) (b: Z): a < b -> a <= b.
 Proof.
   intro.
@@ -42,48 +41,48 @@ Proof.
     firstorder.
 Qed.
 
+Hint Resolve urejen_tail urejen_head urejen_lt_cons najmanjsi_inv najmanjsi_In najmanjsi_head najmanjsi_tail : urejen_hint.
 
-Hint Resolve urejen_tail urejen_head urejen_lt_cons : urejen_hint.
 Lemma ohranjanje_urejenosti_vstavljanja (x: Z) (l: list Z): urejen l -> urejen(insert x l).
 Proof.
-   intro.
-   induction l.
+   intro. (* Vpeljava *)
+   induction l. (* Dokaz z indukcijo po senznamu l *)
    - auto. (* Vstavljanje v prazen seznam *)
    - simpl. (* Netrivialen primer *)
      case (Z_le_gt_dec x a). (* Primerjamo element, ki ga vstavljamo, s trenutno glavo *)
-     * simpl. 
+     * simpl. (* Primer x <= a: samo staknemo x na zacetku, seznam je urejen *)
        auto.
-     * intro.
+     * intro. (* Primer x > a: potujemo po seznamu in x vstavimo na ustrezno mesto. *)
        simpl.
-       destruct l.
-       + simpl.
+       destruct l. (* Locimo primere glede na seznam *)
+       + simpl. (* Prazen seznam *)
          split.
-         Focus.
-           apply manjse_enako.
-           firstorder.
-           assumption. (* Vedno predpostavimo resnico *)
-       + simpl.
-         case (Z_le_gt_dec x z).
-         Focus.
+            apply manjse_enako.
+            firstorder.
+
+            assumption. (* Vedno predpostavimo resnico *)
+       + simpl. (* Seznam sestavljen iz glave in repa *)
+         case (Z_le_gt_dec x z). (* Locimo primere glede na glavo *)
+         simpl.
+           intros.
            split.
-           Focus.
-           firstorder.
-           simpl.
-           split.
-           Focus.
-             assumption.
              firstorder.
-             intro.
              split.
-             Focus.
+                assumption.
                 firstorder.
-                simpl.
-                firstorder.
-                apply urejen_tail in H0.
-                elim H.
-                elim g0.
-                admit.
+         split.
+         firstorder.
+         replace (z :: insert x l) with (insert x (z :: l)). (* Ker zelimo uporabiti hipotezo IHl (njen desni del *)
+         apply urejen_tail in H. (* Poenostavimo H, da ustreza levemu delu IHl in s tem pridobimo 'desni del' IHl *)
+         firstorder.  
+         simpl.
+         firstorder.
+         destruct (Z_le_gt_dec x z). (* V hipotezah imamo ustrezen pogoj, moti nas notacija Z_le_gt_dec *)
+         firstorder.
+         firstorder.
 Qed.
+
+(* ::: Dokaz pravilnosti ::: *)
 
 (* Rezulat insterition sorta je urejen seznam... *)
 Theorem insertion_sort_deluje_1: forall lst: list Z, urejen (insertion_sort lst).
@@ -94,7 +93,6 @@ Proof.
    - reflexivity. (* Trivialen primer *)
    - apply ohranjanje_urejenosti_vstavljanja. (* Tu uporabi pomozno lemo *)
      auto.
-     (*unfold insert.*)
 Qed.
 
 (* ... ki je obenem permutacija vhodnega seznama *)
@@ -112,4 +110,3 @@ Proof.
        * admit.
 Qed.
   
-Lemma ohranjanje_vsebovanosti_seznama
