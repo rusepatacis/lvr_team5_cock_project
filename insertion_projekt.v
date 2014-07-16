@@ -62,24 +62,27 @@ Proof.
 
             assumption. (* Vedno predpostavimo resnico *)
        + simpl. (* Seznam sestavljen iz glave in repa *)
-         case (Z_le_gt_dec x z). (* Locimo primere glede na glavo *)
-         simpl.
-           intros.
-           split.
-             firstorder.
-             split.
-                assumption.
-                firstorder.
-         split.
-         firstorder.
-         replace (z :: insert x l) with (insert x (z :: l)). (* Ker zelimo uporabiti hipotezo IHl (njen desni del *)
-         apply urejen_tail in H. (* Poenostavimo H, da ustreza levemu delu IHl in s tem pridobimo 'desni del' IHl *)
-         firstorder.  
-         simpl.
-         firstorder.
-         destruct (Z_le_gt_dec x z). (* V hipotezah imamo ustrezen pogoj, moti nas notacija Z_le_gt_dec *)
-         firstorder.
-         firstorder.
+         case (Z_le_gt_dec x z). (* Locimo primere glede na primerjavo z glavo *)
+           simpl. (* x <= z ; razpise definicijo urejen*)
+           intros. (* Dokazujemo implikacijo *)
+           split. (* Dokaz konjunkcije *)
+             firstorder. (* Telovadba z neenakostmi *)
+             
+             split. (* Dokaz konjunkcije *)
+              assumption.
+              firstorder.
+           
+           split. (* x > z *)
+              firstorder. (* Telovadba z neenakostmi *)
+           
+              replace (z :: insert x l) with (insert x (z :: l)). (* Ker zelimo uporabiti hipotezo IHl (njen desni del *)
+              apply urejen_tail in H. (* Poenostavimo H, da ustreza levemu delu IHl in s tem pridobimo 'desni del' IHl *)
+              firstorder.  (* Ocitno iz implikacije v hipotezah *)
+              simpl. (* Razpis insert *)
+              firstorder. (* Poenostavimo kar se da v hipotezah *)
+              destruct (Z_le_gt_dec x z). (* V hipotezah imamo ustrezen pogoj, moti nas notacija Z_le_gt_dec, zelimo > <= *)
+              firstorder.
+              firstorder.
 Qed.
 
 (* ::: Dokaz pravilnosti ::: *)
